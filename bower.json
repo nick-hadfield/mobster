@@ -3,8 +3,8 @@
     "main": "mobster.js",
     "version": "0.0.1-alpha",
     "dependencies": {
-        "knockout": "~2.2.1",
-        "jquery": "~2.1.5"
+        "knockout": ">=2.2.1",
+        "jquery": ">=1.10.2"
     },
     "authors": [
         "Nick Hadfield <nick.hadfield@gmail.com>"
