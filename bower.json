@@ -1,0 +1,27 @@
+{
+    "name": "mobster",
+    "main": "mobster.js",
+    "version": "0.0.1-alpha",
+    "dependencies": {
+        "knockout": "~2.2.1",
+        "jquery": "~2.1.5"
+    },
+    "authors": [
+        "Nick Hadfield <nick.hadfield@gmail.com>"
+    ],
+    "keywords": [
+        "spa",
+        "ui",
+        "router",
+        "navigator",
+        "history"
+    ],
+    "license": "MIT",
+    "ignore": [
+        "**/.*",
+        "node_modules",
+        "bower_components",
+        "test",
+        "tests"
+    ]
+}

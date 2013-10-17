@@ -1,0 +1,9 @@
+{
+    "name": "mobster",
+    "main": "mobster.js",
+    "version": "0.0.1-alpha",
+    "dependencies": {
+        "knockout": "~2.2.1",
+        "jquery": "~2.0.3"
+    }
+}
