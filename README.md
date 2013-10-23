@@ -13,7 +13,7 @@ The html page can be cached in the browser and hence what used to always be two 
 var router = new mobster.Router()
     .get('/', function (params) { console.log('Home: '); })
     .get('#hello', function (params) { window.alert('hello'; })
-    .get('#world', function (params) { window.alert('world: ' + params['text']); })
+    .get('#world', function (params) { window.alert('world: ' + params.text); })
     .get('#blah', function (params) { 
         require('/pages/blah/handler', function (handler) {
             handler.execute(params);

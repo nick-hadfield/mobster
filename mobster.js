@@ -76,6 +76,7 @@
         // Uri //
         var Uri = function(url) {
             var that = this;
+            that._type = 'Uri';
 
             var a = document.createElement('a');
             a.href = url; //"http://example.com:3000/pathname/?search=test#hash";
@@ -113,81 +114,135 @@
         };
 
         // Router //
-        var Router = (function() {
-            var Router = function() {
-                var that = this;
-                that.routes = {};
-                that.basePath = '';
-                $(window).on('hashchange', function() {
-                    that.execute();
-                });
-                return that;
-            };
-            Router.prototype.setBasePath = function(basePath) {
-                var that = this;
-                that.basePath = basePath;
-                return that;
-            };
-            Router.prototype.get = function(route, handler) {
-                var that = this;
-                that.routes[route] = handler;
-                return that;
-            };
-            Router.prototype.route = function(url) {
-                log('Routing ' + url);
-                var that = this;
-                var uri = new Uri(url);
-                var route = uri.pathname + uri.hash;
-                if (that.basePath) {
-                    if (route.substring(0, that.basePath.length) == that.basePath) {
-                        route = route.substring(that.basePath.length);
-                    }
+        var Router = function() {
+            var that = this;
+            that._type = 'Router';
+            that.preHandlers = [];
+            that.routeHandlers = {};
+            that.endHandlers = [];
+            that.basePath = '';
+            $(window).on('hashchange', function() {
+                that.execute();
+            });
+            return that;
+        };
+        Router.prototype.setBasePath = function(basePath) {
+            var that = this;
+            that.basePath = basePath;
+            return that;
+        };
+        Router.prototype.pre = function(handler) {
+            var that = this;
+            that.preHandlers.push(handler);
+            return that;
+        };
+        Router.prototype.get = function(route, handler) {
+            var that = this;
+            if (!that.routeHandlers[route]) that.routeHandlers[route] = [];
+            var handlers = that.routeHandlers[route];
+            handlers.push(handler);
+            return that;
+        };
+        Router.prototype.end = function(handler) {
+            var that = this;
+            that.endHandlers.push(handler);
+            return that;
+        };
+        Router.prototype.route = function(url) {
+            //log('Routing ' + url);
+            var that = this;
+            var uri = new Uri(url);
+            var route = uri.pathname + uri.hash;
+            if (that.basePath) {
+                if (route.substring(0, that.basePath.length) == that.basePath) {
+                    route = route.substring(that.basePath.length);
                 }
-                var handler = that.routes[route] || that.routes[uri.hash];
-                if (handler) {
-                    handler(uri.params);
-                }
-                return that;
-            };
-            Router.prototype.execute = function() {
-                var that = this;
-                that.route(document.URL);
-                return that;
-            };
-            return Router;
-        })();
+            }
+            uri.route = route;
 
-        // Container - Not yet implemented. //
-        var Container = (function() {
-            var Container = function() {
-                var that = this;
-                that.$el = $('<div></div>');
-                return that;
-            };
-            Container.prototype.resolve = function() {
-                var that = this;
-                var deferred = new $.Deferred();
-                deferred.resolve(that);
-                return deferred.promise();
-            };
-            Container.prototype.setTemplateText = function(text) {
-                var that = this;
-                that.$el.html(text);
-                return that.resolve();
-            };
-            Container.prototype.applyBindings = function(model) {
-                var that = this;
-                log('Container: Binding');
-                ko.applyBindings(model || {}, that.$el[0]);
-                return that;
-            };
-            return Container;
-        })();
+            var context = {};
+
+            // Pre Handlers //
+            each(that.preHandlers, function(handler) {
+               handler(uri, context);
+            });
+
+            // Get Handlers //
+            var routeHandlers = that.routeHandlers[route] || that.routeHandlers[uri.hash];
+            if (routeHandlers) {
+                each(routeHandlers, function(handler) {
+                    handler(uri, context);
+                });
+            }
+
+            // End Handlers //
+            each(that.endHandlers, function(handler) {
+                handler(uri, context);
+            });
+
+            return that;
+        };
+        Router.prototype.execute = function() {
+            var that = this;
+            that.route(document.URL);
+            return that;
+        };
+
+        // View //
+        var View = function () {
+            var that = this;
+            that._type = 'View';
+            return that;
+        };
+        View.prototype.setHtml = function(text) {
+            var that = this;
+            that.$el = $(text);
+            return that;
+        };
+        View.prototype.setTemplate = function(name) {
+            var that = this;
+            that.$el = $('<div data-bind="template: { name: \'' + name + '\' }"></div>');
+            return that;
+        };
+
+        // Content //
+        var Content = function(view, model) {
+            var that = this;
+            if (!view) throw "The 'view' parameter was not specified.";
+            if (view._type != 'View') throw "The 'view' parameter must be a view.";
+            that._type = 'Content';
+            that.view = view;
+            that.model = model;
+            that.bind();
+            return that;
+        };
+        Content.prototype.bind = function () {
+            var that = this;
+            if (!that.view.$el) throw "The 'view' has not been initialised.";
+            ko.applyBindings(that.model || {}, that.view.$el[0]);
+            return that;
+        };
+
+        // Target //
+        var Target = function(id) {
+            var that = this;
+            if (!id) id = 'body';
+            that.$el = $(id);
+            return that;
+        };
+        Target.prototype.setContent = function(content) {
+            var that = this;
+            if (!content) throw "The 'content' parameter was not specified.";
+            if (content._type != 'Content') throw "The 'content' parameter must be content.";
+            that.$el.html(content.view.$el);
+            return that;
+        };
 
         // Navigator - Not yet implemented. //
         var Navigator = (function() {
             var Navigator = function() {
                 var that = this;
+                that._type = 'Navigator';
                 that.containers = ko.observableArray();
                 return that;
             };
@@ -224,9 +279,12 @@
             initialised = true;
             mobster.Uri = Uri;
             mobster.Router = Router;
-            mobster.Container = Container;
-            mobster.Navigator = Navigator;
+            mobster.View = View;
+            mobster.Content = Content;
+            mobster.Target = Target;
+            //mobster.Navigator = Navigator;
             mobster.f = {
+                log: log,
                 each: each,
                 peach: peach,
                 pwhile: pwhile,
