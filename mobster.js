@@ -158,26 +158,28 @@
                     route = route.substring(that.basePath.length);
                 }
             }
-            uri.route = route;
 
             var context = {};
+            context.uri = uri;
+            context.route = route;
+            context.params = uri.params;
 
             // Pre Handlers //
             each(that.preHandlers, function(handler) {
-               handler(uri, context);
+               handler(context);
             });
 
             // Get Handlers //
             var routeHandlers = that.routeHandlers[route] || that.routeHandlers[uri.hash];
             if (routeHandlers) {
                 each(routeHandlers, function(handler) {
-                    handler(uri, context);
+                    handler(context);
                 });
             }
 
             // End Handlers //
             each(that.endHandlers, function(handler) {
-                handler(uri, context);
+                handler(context);
             });
 
             return that;
