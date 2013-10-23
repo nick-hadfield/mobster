@@ -1,6 +1,7 @@
-# A Framework for Creating Single Page Applications
+Mobster
+=======
 
-Mobster has dependencies on [jQuery](http://jquery.com/), and [Knockout](http://knockoutjs.com/) and contains features for managing routes (<code>Router</code>), History (<code>Navigator</code>), and other miscellaneous utilities.
+Mobster has dependencies on [jQuery](http://jquery.com/), and [Knockout](http://knockoutjs.com/) and contains features for managing routes (<code>Router</code>), history (<code>Navigator</code>), and other miscellaneous utilities.
 
 ## The Router Class
 
@@ -24,22 +25,19 @@ $(function() {
     router.execute();
 });
 ```
-## The Navigator Class
-
-The <code>Navigator</code> class blah blah blah...
 
 ## Installation (using bower)
 
 ```bash
-bower install mobster
+bower install git://github.com/nick-hadfield/mobster.git
 ```
 
 ## Installation (getting up and running)
 
 ```bash
-npm install yeoman -g
+npm install yo -g
 npm install generator-webapp -g
 yo webapp
-bower install mobster
+bower install git://github.com/nick-hadfield/mobster.git
 grunt bower
 ```

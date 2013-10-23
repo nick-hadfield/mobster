@@ -3,18 +3,17 @@
     "main": "mobster.js",
     "version": "0.0.1-alpha",
     "dependencies": {
-        "knockout": ">=2.2.1",
+        "knockout.js": ">=2.3.0",
         "jquery": ">=1.10.2"
     },
     "authors": [
         "Nick Hadfield <nick.hadfield@gmail.com>"
     ],
     "keywords": [
-        "spa",
         "ui",
+        "spa",
         "router",
-        "navigator",
-        "history"
+        "knockout"
     ],
     "license": "MIT",
     "ignore": [
