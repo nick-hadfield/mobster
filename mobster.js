@@ -1,3 +1,4 @@
+// Mobster - Copyright (c) 2013 Nick Hadfield //
 (function (root, factory) {
 
     if (typeof define === 'function' && define.amd) {
